@@ -25,12 +25,12 @@ public @interface DistributedLockApi {
     String value() default "lock_value";
 
     /**
-     * 超时时间
+     * 锁超时时间
      */
     long timeout() default 10;
 
     /**
-     * 时间单位
+     * 超时时间单位
      */
     TimeUnit timeUnit() default TimeUnit.MINUTES;
 
@@ -38,4 +38,9 @@ public @interface DistributedLockApi {
      * 被加锁方法执行完是否立即释放锁
      */
     boolean immediatelyUnLock() default true;
+
+    /**
+     * 等待获取锁时间(秒)
+     */
+    long waitLockSecondTime() default 0;
 }

@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 public class ApiController {
 
-    @DistributedLockApi(timeout = 20, timeUnit = TimeUnit.SECONDS, immediatelyUnLock = false)
+    @DistributedLockApi(timeout = 20, timeUnit = TimeUnit.SECONDS, immediatelyUnLock = false, waitLockSecondTime = 5)
     @GetMapping(value = "/test")
     public String test() {
         log.info("test!!");

@@ -38,4 +38,9 @@ public @interface DistributedLockTask {
      * 被加锁方法执行完是否立即释放锁
      */
     boolean immediatelyUnLock() default true;
+
+    /**
+     * 等待获取锁时间(秒)
+     */
+    long waitLockSecondTime() default 0;
 }

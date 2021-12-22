@@ -67,7 +67,7 @@ public class DistributedLockAspect {
         // 类名方法名作为分布式锁的key
         String key = distributedLockTask.key() + "_" + className + "_" + methodName;
         // 获取锁
-        Boolean status = getLock(key, distributedLockTask.value(), distributedLockTask.timeout(), distributedLockTask.timeUnit());
+        Boolean status = getLock(key, distributedLockTask.value(), distributedLockTask.timeout(), distributedLockTask.timeUnit(), distributedLockTask.waitLockSecondTime());
         if (!ObjectUtils.isEmpty(status) && status.equals(Boolean.TRUE)) {
             try {
                 Object proceed = pjp.proceed();
@@ -104,7 +104,7 @@ public class DistributedLockAspect {
         // 类名方法名作为分布式锁的key
         String key = distributedLockApi.key() + "_" + method + "_" + uri + "_" + JSONObject.toJSONString(args);
         // 获取锁
-        Boolean status = getLock(key, distributedLockApi.value(), distributedLockApi.timeout(), distributedLockApi.timeUnit());
+        Boolean status = getLock(key, distributedLockApi.value(), distributedLockApi.timeout(), distributedLockApi.timeUnit(), distributedLockApi.waitLockSecondTime());
         if (!ObjectUtils.isEmpty(status) && status.equals(Boolean.TRUE)) {
             try {
                 Object proceed = pjp.proceed();
@@ -124,10 +124,14 @@ public class DistributedLockAspect {
     /**
      * 获取锁
      */
-    private Boolean getLock(String key, String value, long timeout, TimeUnit unit) {
+    private Boolean getLock(String key, String value, long timeout, TimeUnit unit, long waitLockSecondTime) {
         Boolean status = null;
         try {
-            status = stringRedisTemplate.opsForValue().setIfAbsent(key, value, timeout, unit);
+            long endTime = System.currentTimeMillis() + waitLockSecondTime * 1000;
+            do {
+                status = stringRedisTemplate.opsForValue().setIfAbsent(key, value, timeout, unit);
+                Thread.sleep(50);
+            } while (System.currentTimeMillis() - endTime < 0 && (ObjectUtils.isEmpty(status) || !status.equals(Boolean.TRUE)));
         } catch (Exception e) {
             log.error("getLock failure!! error:{}", e.getMessage());
         }
