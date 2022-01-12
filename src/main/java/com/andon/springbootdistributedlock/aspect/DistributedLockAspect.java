@@ -88,7 +88,7 @@ public class DistributedLockAspect {
      * API加分布式锁
      */
     @Around(value = "apiPointCut() && @annotation(distributedLockApi)")
-    public Object apiAround(ProceedingJoinPoint pjp, DistributedLockApi distributedLockApi) throws Exception {
+    public Object apiAround(ProceedingJoinPoint pjp, DistributedLockApi distributedLockApi) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String remoteHost = request.getRemoteHost(); //访问者ip
         String method = request.getMethod(); //请求方式
